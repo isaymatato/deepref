@@ -1,3 +1,5 @@
+// @TODO - pointer,field should be a class
+
 function mapKeys(parent, pointer) {
   Object.keys(pointer).forEach(function(key) {
     parent.pointer[ parent.field ][key] = pointer[key];
@@ -48,3 +50,10 @@ function deepSet(object, path, value) {
   var deep = deepReference(object, path);
   deep.pointer[deep.field] = value;
 }
+
+module.exports = {
+  set: function(object, path, value) {
+    var deep = deepReference(object, path);
+    deep.pointer[deep.field] = value;
+  }
+};
