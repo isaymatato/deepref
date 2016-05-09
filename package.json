@@ -1,0 +1,27 @@
+{
+  "name": "deepref",
+  "version": "1.0.0",
+  "description": "Write to a deeply nested reference within an object",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/isaymatato/deepref.git"
+  },
+  "keywords": [
+    "javascript",
+    "js",
+    "deep",
+    "reference",
+    "nested",
+    "object"
+  ],
+  "author": "Mateo Williford <mateowilliford@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/isaymatato/deepref/issues"
+  },
+  "homepage": "https://github.com/isaymatato/deepref#readme"
+}
