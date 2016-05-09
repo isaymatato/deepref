@@ -52,8 +52,18 @@ function deepSet(object, path, value) {
 }
 
 module.exports = {
+  /**
+  * Set a deeply nested value of an object
+  * This alters the original object
+  *
+  * @param  {Object} object The object you want to alter
+  * @param  {String} path The reference path
+  * @param  {*} value The value you want to set
+  * @return {Object} object Retuns the altered object
+  */
   set: function(object, path, value) {
     var deep = deepReference(object, path);
     deep.pointer[deep.field] = value;
+    return object;
   }
 };
