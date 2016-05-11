@@ -1,5 +1,3 @@
-// @TODO - pointer,field should be a class
-
 function checkIfStringIsNumber(field) {
   return /^\d+$/.test(field);
 }
@@ -9,6 +7,13 @@ function Reference(pointer, field, parent) {
   this.field = field;
   this.parent = parent || null;
 }
+
+Reference.prototype.copy = function(reference) {
+  this.pointer = reference.pointer;
+  this.field = reference.field;
+  this.parent = reference.parent;
+  return this;
+};
 
 Reference.prototype.mapKeys = function(source) {
   if (typeof source !== 'object') {
@@ -24,7 +29,11 @@ Reference.prototype.mapKeys = function(source) {
 };
 
 Reference.prototype.get = function() {
-  return this.pointer[this.field];
+  if (!this.field) {
+    return this.pointer;
+  } else {
+    return this.pointer[this.field];
+  }
 };
 
 Reference.prototype.getType = function(value) {
@@ -32,7 +41,20 @@ Reference.prototype.getType = function(value) {
 };
 
 Reference.prototype.set = function(value) {
-  return this.pointer[this.field] = value;
+  if (typeof this.field === 'undefined') {
+    throw new Error('Cannot set, field is undefined');
+    return null;
+  }
+  this.pointer[this.field] = value;
+  return this;
+};
+
+Reference.prototype.resolve = function() {
+  var reference = this;
+  while (reference.parent) {
+    reference = reference.getParent();
+  }
+  return reference;
 };
 
 Reference.prototype.initializeChildAsObject = function() {
@@ -56,8 +78,8 @@ Reference.prototype.convertChildToArray = function() {
 };
 
 Reference.prototype.convertToArray = function() {
-  // Cannot convert without a parent!
   if (!this.parent) {
+    throw new Error('Cannot convert to array without a parent reference!');
     return null;
   }
 
@@ -81,76 +103,22 @@ Reference.prototype.getParent = function() {
   return this.parent || null;
 };
 
-
-function doThing(pointer,field){
-
-  // if (isNum) {
-  //   // Field is an integer
-  //   field = parseInt(field);
-
-  //   // Convert current obj to array if it isn't one already
-  //   if (!Array.isArray(pointer) &&
-  //       parent) {
-  //     parent.pointer[ parent.field ] = [];
-  //     mapKeys(parent, pointer);
-  //     pointer = parent.pointer[ parent.field ];
-  //   }
-  // }
-
-  if (typeof pointer[field] !== 'object') {
-    pointer[field] = {};
-  }
-
-  parent = new Reference(pointer, field);
-
-  // if (i < path.length - 1) {
-  //   pointer = pointer[field];
-  // }
-}
-
-function deepReference(object, path) {
+Reference.createFromPath = function(pointer, path) {
+  var reference = new Reference(pointer);
   path = path.split('.');
-  var field;
-  var intField;
-  var pointer = object;
-  var parent = null;
-  for (var i = 0; i < path.length; i += 1) {
-    field = path[i];
-    var isNum = /^\d+$/.test(field);
-
-    if (isNum) {
-      // Field is an integer
+  path.forEach(function(field, index) {
+    var isNumber = checkIfStringIsNumber(field);
+    var hasParent = reference.getParent() ? true : false;
+    if (isNumber && hasParent) {
       field = parseInt(field);
-
-      // Convert current obj to array if it isn't one already
-      if (!Array.isArray(pointer) &&
-          parent) {
-        parent.pointer[ parent.field ] = [];
-        mapKeys(parent, pointer);
-        pointer = parent.pointer[ parent.field ];
-      }
+      reference.convertToArray();
     }
+    reference = reference.getChild(field);
+  });
+  return reference;
+};
 
-    if (typeof pointer[field] !== 'object') {
-      pointer[field] = {};
-    }
-
-    parent = new Reference(pointer, field);
-
-    if (i < path.length - 1) {
-      pointer = pointer[field];
-    }
-  }
-  return new Reference(pointer, field);
-}
-
-function deepSet(object, path, value) {
-  var deep = deepReference(object, path);
-  deep.pointer[deep.field] = value;
-}
-
-module.exports = {
-  /**
+/**
   * Set a deeply nested value of an object
   * This alters the original object
   *
@@ -159,9 +127,10 @@ module.exports = {
   * @param  {*} value The value you want to set
   * @return {Object} object Retuns the altered object
   */
-  set: function(object, path, value) {
-    var deep = deepReference(object, path);
-    deep.pointer[deep.field] = value;
-    return object;
-  }
+Reference.set = function(object, path, value) {
+  var reference = Reference.createFromPath(object, path);
+  reference.set(value);
+  return reference.resolve();
 };
+
+module.exports = Reference;
