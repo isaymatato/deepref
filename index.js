@@ -1,31 +1,88 @@
 // @TODO - pointer,field should be a class
 
-function Reference(pointer, field) {
-  this.pointer = pointer;
-  this.field = field
-}
-
-Reference.prototype.resolve = function() {
-  return this.pointer[this.field];
-};
-
-Reference.prototype.set = function(value) {
-
-};
-
-function mapKeys(parent, pointer) {
-  Object.keys(pointer).forEach(function(key) {
-    parent.pointer[ parent.field ][key] = pointer[key];
-  });
-}
-
-function isNumber(field) {
+function checkIfStringIsNumber(field) {
   return /^\d+$/.test(field);
 }
 
+function Reference(pointer, field, parent) {
+  this.pointer = pointer;
+  this.field = field;
+  this.parent = parent || null;
+}
+
+Reference.prototype.mapKeys = function(source) {
+  if (typeof source !== 'object') {
+    throw new Error('Cannot map from source, source is not an object');
+    return null;
+  }
+
+  Object.keys(source).forEach(function(key) {
+    this.pointer[ this.field ][key] = pointer[key];
+  });
+
+  return this;
+};
+
+Reference.prototype.get = function() {
+  return this.pointer[this.field];
+};
+
+Reference.prototype.getType = function(value) {
+  return typeof this.pointer[this.field];
+};
+
+Reference.prototype.set = function(value) {
+  return this.pointer[this.field] = value;
+};
+
+Reference.prototype.initializeChildAsObject = function() {
+  if (this.getType() !== 'object') {
+    this.set({});
+  }
+  return this;
+};
+
+Reference.prototype.convertChildToArray = function() {
+  var child = this.get();
+
+  // Pointer already references an array
+  if (Array.isArray(child)) {
+    return this;
+  }
+
+  this.set([]);
+  this.mapKeys(child);
+  return this.get();
+};
+
+Reference.prototype.convertToArray = function() {
+  // Cannot convert without a parent!
+  if (!this.parent) {
+    return null;
+  }
+
+  this.pointer = this.parent.convertChildToArray();
+};
+
+Reference.prototype.getChild = function(field) {
+  if (typeof field !== 'string') {
+    throw new Error(
+      'Reference.getChild: field must be a string, type:' + typeof field);
+    return null;
+  }
+  this.initializeAsObject();
+  var parent = this;
+  var pointer = this.get();
+
+  return new Reference(pointer, field, parent);
+};
+
+Reference.prototype.getParent = function() {
+  return this.parent || null;
+};
+
+
 function doThing(pointer,field){
-  var isNum = /^\d+$/.test(field);
-  var oldField = field;
 
   // if (isNum) {
   //   // Field is an integer
@@ -60,7 +117,6 @@ function deepReference(object, path) {
   for (var i = 0; i < path.length; i += 1) {
     field = path[i];
     var isNum = /^\d+$/.test(field);
-    var oldField = field;
 
     if (isNum) {
       // Field is an integer
