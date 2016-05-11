@@ -54,7 +54,7 @@ Reference.prototype.resolve = function() {
   while (reference.parent) {
     reference = reference.getParent();
   }
-  return reference;
+  return reference.pointer;
 };
 
 Reference.prototype.initializeChildAsObject = function() {
@@ -87,13 +87,13 @@ Reference.prototype.convertToArray = function() {
 };
 
 Reference.prototype.getChild = function(field) {
-  if (typeof field !== 'string') {
-    throw new Error(
-      'Reference.getChild: field must be a string, type:' + typeof field);
-    return null;
-  }
-  this.initializeAsObject();
   var parent = this;
+
+  if (!this.field) {
+    return new Reference(this.pointer, field, parent);
+  }
+
+  this.initializeChildAsObject();
   var pointer = this.get();
 
   return new Reference(pointer, field, parent);
@@ -106,15 +106,20 @@ Reference.prototype.getParent = function() {
 Reference.createFromPath = function(pointer, path) {
   var reference = new Reference(pointer);
   path = path.split('.');
-  path.forEach(function(field, index) {
+  path.forEach(function(field) {
     var isNumber = checkIfStringIsNumber(field);
     var hasParent = reference.getParent() ? true : false;
-    if (isNumber && hasParent) {
+    if (isNumber) {
       field = parseInt(field);
+    }
+
+    reference = reference.getChild(field);
+
+    if (isNumber && hasParent) {
       reference.convertToArray();
     }
-    reference = reference.getChild(field);
   });
+
   return reference;
 };
 
