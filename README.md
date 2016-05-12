@@ -4,11 +4,12 @@ DeepRef
 Write to a deeply nested reference within an object.
 
 ## Installation
-
+  ```
   npm install deepref --save
+  ```
 
 ## Usage
-
+  ```javascript
   var deep = require('deep');
 
   var obj = {};
@@ -48,10 +49,12 @@ Write to a deeply nested reference within an object.
   *  ]
   *	}
   */
+  ```
 
 ## Tests
-
+  ```
   npm test
+  ```
 
 ## Contributing
 
