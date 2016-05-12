@@ -12,7 +12,7 @@ module.exports = {
     var reference = Reference.createFromPath(object, path);
     reference.set(value);
     return reference.resolve();
-  };
+  }
 };
 
 function Reference(pointer, field, parent) {
