@@ -18,23 +18,23 @@ describe('#set', function() {
     obj.a.b[0].should.equal(true);
   });
 
-  it('sets obj to ["a","b","c"]', function() {
+  it('sets obj to ["A","B","C"]', function() {
     var obj = {};
-    obj = set(obj, '0', 'a');
-    obj = set(obj, '1', 'b');
-    obj = set(obj, '2', 'c');
-    obj[0].should.equal('a');
-    obj[1].should.equal('b');
-    obj[2].should.equal('c');
+    obj = set(obj, '0', 'A');
+    obj = set(obj, '1', 'B');
+    obj = set(obj, '2', 'C');
+    obj[0].should.equal('A');
+    obj[1].should.equal('B');
+    obj[2].should.equal('C');
   });
 
   it('sets obj.a to ["a","b","c"]', function() {
     var obj = {};
-    obj = set(obj, 'a.0', 'a');
-    obj = set(obj, 'a.1', 'b');
-    obj = set(obj, 'a.2', 'c');
-    obj.a[0].should.equal('a');
-    obj.a[1].should.equal('b');
-    obj.a[2].should.equal('c');
+    obj = set(obj, 'a.0', 'A');
+    obj = set(obj, 'a.1', 'B');
+    obj = set(obj, 'a.2', 'C');
+    obj.a[0].should.equal('A');
+    obj.a[1].should.equal('B');
+    obj.a[2].should.equal('C');
   });
 });

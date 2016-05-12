@@ -109,14 +109,10 @@ Reference.prototype.convertToArray = function() {
 
 Reference.prototype.convertChildToArray = function() {
   var child = this.get();
-
-  // Pointer already references an array
-  if (Array.isArray(child)) {
-    return this;
+  if (!Array.isArray(child)) {
+    this.set([]);
+    this.mapKeys(child);
   }
-
-  this.set([]);
-  this.mapKeys(child);
   return this.get();
 };
 
