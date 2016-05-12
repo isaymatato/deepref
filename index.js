@@ -1,44 +1,25 @@
-function checkIfStringIsNumber(field) {
-  return /^\d+$/.test(field);
-}
+module.exports = {
+  /**
+  * Set a deeply nested value of an object
+  * This alters the original object
+  *
+  * @param  {Object} object The object you want to alter
+  * @param  {String} path The reference path
+  * @param  {*} value The value you want to set
+  * @return {Object} object Retuns the altered object
+  */
+  set: function(object, path, value) {
+    var reference = Reference.createFromPath(object, path);
+    reference.set(value);
+    return reference.resolve();
+  };
+};
 
 function Reference(pointer, field, parent) {
   this.pointer = pointer;
   this.field = field;
   this.parent = parent || null;
 }
-
-Reference.prototype.copy = function(reference) {
-  this.pointer = reference.pointer;
-  this.field = reference.field;
-  this.parent = reference.parent;
-  return this;
-};
-
-Reference.prototype.mapKeys = function(source) {
-  if (typeof source !== 'object') {
-    throw new Error('Cannot map from source, source is not an object');
-    return null;
-  }
-
-  Object.keys(source).forEach(function(key) {
-    this.pointer[ this.field ][key] = pointer[key];
-  });
-
-  return this;
-};
-
-Reference.prototype.get = function() {
-  if (!this.field) {
-    return this.pointer;
-  } else {
-    return this.pointer[this.field];
-  }
-};
-
-Reference.prototype.getType = function(value) {
-  return typeof this.pointer[this.field];
-};
 
 Reference.prototype.set = function(value) {
   if (typeof this.field === 'undefined') {
@@ -55,52 +36,6 @@ Reference.prototype.resolve = function() {
     reference = reference.getParent();
   }
   return reference.pointer;
-};
-
-Reference.prototype.initializeChildAsObject = function() {
-  if (this.getType() !== 'object') {
-    this.set({});
-  }
-  return this;
-};
-
-Reference.prototype.convertChildToArray = function() {
-  var child = this.get();
-
-  // Pointer already references an array
-  if (Array.isArray(child)) {
-    return this;
-  }
-
-  this.set([]);
-  this.mapKeys(child);
-  return this.get();
-};
-
-Reference.prototype.convertToArray = function() {
-  if (!this.parent) {
-    throw new Error('Cannot convert to array without a parent reference!');
-    return null;
-  }
-
-  this.pointer = this.parent.convertChildToArray();
-};
-
-Reference.prototype.getChild = function(field) {
-  var parent = this;
-
-  if (!this.field) {
-    return new Reference(this.pointer, field, parent);
-  }
-
-  this.initializeChildAsObject();
-  var pointer = this.get();
-
-  return new Reference(pointer, field, parent);
-};
-
-Reference.prototype.getParent = function() {
-  return this.parent || null;
 };
 
 Reference.createFromPath = function(pointer, path) {
@@ -123,19 +58,80 @@ Reference.createFromPath = function(pointer, path) {
   return reference;
 };
 
-/**
-  * Set a deeply nested value of an object
-  * This alters the original object
-  *
-  * @param  {Object} object The object you want to alter
-  * @param  {String} path The reference path
-  * @param  {*} value The value you want to set
-  * @return {Object} object Retuns the altered object
-  */
-Reference.set = function(object, path, value) {
-  var reference = Reference.createFromPath(object, path);
-  reference.set(value);
-  return reference.resolve();
+function checkIfStringIsNumber(field) {
+  return /^\d+$/.test(field);
+}
+
+Reference.prototype.getParent = function() {
+  return this.parent || null;
 };
 
-module.exports = Reference;
+Reference.prototype.getChild = function(field) {
+  var parent = this;
+
+  if (!this.field) {
+    return new Reference(this.pointer, field, parent);
+  }
+
+  this.initializeChildAsObject();
+  var pointer = this.get();
+
+  return new Reference(pointer, field, parent);
+};
+
+Reference.prototype.get = function() {
+  if (!this.field) {
+    return this.pointer;
+  } else {
+    return this.pointer[this.field];
+  }
+};
+
+Reference.prototype.initializeChildAsObject = function() {
+  if (this.getType() !== 'object') {
+    this.set({});
+  }
+  return this;
+};
+
+Reference.prototype.getType = function(value) {
+  return typeof this.pointer[this.field];
+};
+
+Reference.prototype.convertToArray = function() {
+  if (!this.parent) {
+    throw new Error('Cannot convert to array without a parent reference!');
+    return null;
+  }
+
+  this.pointer = this.parent.convertChildToArray();
+};
+
+Reference.prototype.convertChildToArray = function() {
+  var child = this.get();
+
+  // Pointer already references an array
+  if (Array.isArray(child)) {
+    return this;
+  }
+
+  this.set([]);
+  this.mapKeys(child);
+  return this.get();
+};
+
+Reference.prototype.mapKeys = function(source) {
+  if (typeof source !== 'object') {
+    throw new Error('Cannot map from source, source is not an object');
+    return null;
+  }
+
+  Object.keys(source).forEach(function(key) {
+    this.pointer[ this.field ][key] = pointer[key];
+  });
+
+  return this;
+};
+
+
+
