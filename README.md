@@ -10,7 +10,7 @@ Write to a deeply nested reference within an object.
 
 ## Usage
   ```javascript
-  var deep = require('deep');
+  var deep = require('deepref');
 
   var obj = {};
 
