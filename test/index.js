@@ -28,7 +28,7 @@ describe('#set', function() {
     obj[2].should.equal('C');
   });
 
-  it('sets obj.a to ["a","b","c"]', function() {
+  it('sets obj.a to ["A","B","C"]', function() {
     var obj = {};
     obj = set(obj, 'a.0', 'A');
     obj = set(obj, 'a.1', 'B');
