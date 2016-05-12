@@ -27,4 +27,14 @@ describe('#set', function() {
     obj[1].should.equal('b');
     obj[2].should.equal('c');
   });
+
+  it('sets obj.a to ["a","b","c"]', function() {
+    var obj = {};
+    obj = set(obj, 'a.0', 'a');
+    obj = set(obj, 'a.1', 'b');
+    obj = set(obj, 'a.2', 'c');
+    obj.a[0].should.equal('a');
+    obj.a[1].should.equal('b');
+    obj.a[2].should.equal('c');
+  });
 });
