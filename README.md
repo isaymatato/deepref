@@ -1,22 +1,60 @@
+DeepRef
+=========
+
 Write to a deeply nested reference within an object.
 
-Still working on the documentation, basically:
+## Installation
 
-deepRef.set(object, path, value);
+  npm install deepref --save
 
-i.e.
+## Usage
 
-var myObj = {};
+  var deep = require('deep');
 
+  var obj = {};
 
-deepRef.set(myObj, 'a.b.0', 'Deep so deep');
+  deep.set(obj, 'a', 'obj.a is set to this');
 
-myObj is now:
+  console.dir(obj);
+  // { a: 'obj.a is set to this' }
 
-{
-	a: {
-		b: [
-			'Deep so deep'
-		]
-	} 
-}
+  deep.set(obj, 'b.c', 'we can set nested fields');
+
+  console.dir(obj);
+  /*
+  * {
+  *  a: 'obj.a is set to this',
+  *  b: {
+  *    c: 'we can set nested fields'
+  *  }
+  *	}
+  */
+
+  deep.set(obj, 'd.0', 'we can even..');
+  deep.set(obj, 'd.1', '..create arrays..');
+  deep.set(obj, 'd.2', '..by using an integer as the index');
+
+  console.dir(obj);
+  /*
+  * {
+  *  a: 'obj.a is set to this',
+  *  b: {
+  *    c: 'we can set nested fields'
+  *  },
+  *  d: [
+  *    'we can even..',
+  *    '..create arrays..',
+  *    '..by using an integer as the index'
+  *  ]
+  *	}
+  */
+
+## Tests
+
+  npm test
+
+## Contributing
+
+Please use the included style guide.  If you change anything, please test
+and add unit tests for any new functionality.  If you're fixing a bug, please
+add a unit test that would have failed before the bug was fixed.  Thanks!
