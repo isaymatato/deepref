@@ -1,6 +1,6 @@
 {
   "name": "deepref",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Write to a deeply nested reference within an object",
   "main": "index.js",
   "scripts": {
