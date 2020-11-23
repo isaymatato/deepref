@@ -42,6 +42,14 @@ describe('#set', function() {
     obj.a[1].should.equal('B');
     obj.a[2].should.equal('C');
   });
+
+  context('attempt to modify prototype', function() {
+    it('throws an error', function() {
+      assert.throws(
+        () => set({}, '__proto__.foo', 'hacker_attack!'),
+        Error, 'Cannot assign reference to prototype')
+    })
+  })
 });
 
 describe('#decorate', function() {

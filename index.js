@@ -55,6 +55,10 @@ Reference.createFromPath = function(pointer, path) {
   var reference = new Reference(pointer);
   path = path.split('.');
   path.forEach(function(field) {
+    if (field === '__proto__') {
+      throw new Error('Cannot assign reference to prototype')
+    }
+
     var isNumber = checkIfStringIsNumber(field);
     var hasParent = reference.getParent() ? true : false;
     if (isNumber) {
