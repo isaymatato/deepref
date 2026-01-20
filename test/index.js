@@ -49,6 +49,30 @@ describe('#set', function() {
         () => set({}, '__proto__.foo', 'hacker_attack!'),
         Error, 'Cannot assign reference to prototype')
     })
+
+    it('blocks prototype pollution via toString bypass', function() {
+      var originalSplit = String.prototype.split;
+      var arg = ['__proto__'];
+      var flag1 = true;
+      arg.toString = function () {
+        if (flag1) {
+          flag1 = false;
+          return 'foo';
+        } else {
+          return '__proto__';
+        }
+      };
+      String.prototype.split = function () {
+        return [arg, 'polluted'];
+      };
+
+      try {
+        set({}, 'anything', 'yes');
+        expect({}.polluted).to.be.undefined;
+      } finally {
+        String.prototype.split = originalSplit;
+      }
+    })
   })
 });
 

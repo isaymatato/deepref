@@ -55,7 +55,8 @@ Reference.createFromPath = function(pointer, path) {
   var reference = new Reference(pointer);
   path = path.split('.');
   path.forEach(function(field) {
-    if (field === '__proto__') {
+    field = String(field);
+    if (field === '__proto__' || field === 'constructor' || field === 'prototype') {
       throw new Error('Cannot assign reference to prototype')
     }
 
