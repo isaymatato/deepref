@@ -24,6 +24,6 @@
   "homepage": "https://github.com/isaymatato/deepref#readme",
   "devDependencies": {
     "chai": "^3.5.0",
-    "mocha": "^2.4.5"
+    "mocha": "^11.7.5"
   }
 }
